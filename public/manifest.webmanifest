@@ -1,0 +1,17 @@
+{
+  "name": "Sivas Yemek",
+  "short_name": "Sivas Yemek",
+  "description": "Sivas'taki KYK yurtları, Cumhuriyet Üniversitesi ve CÜTF hastanesi yemekhanelerinin günlük menüleri.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#b9382c",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

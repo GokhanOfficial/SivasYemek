@@ -1,371 +1,143 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sivas Yemek</title>
-<meta name="description" content="Sivas'taki KYK yurtları, Cumhuriyet Üniversitesi ve CÜTF hastanesi yemekhanelerinin günlük menüleri tek sayfada.">
-<meta name="theme-color" content="#a3262a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='6' width='28' height='20' rx='5' fill='%23a3262a'/%3E%3Crect x='5' y='9' width='10' height='14' rx='2' fill='%23f2f3ef'/%3E%3Crect x='17' y='9' width='10' height='6' rx='2' fill='%23f2f3ef'/%3E%3Crect x='17' y='17' width='10' height='6' rx='2' fill='%23f2f3ef'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --paper: #eef0ec;
-    --ink: #1d2430;
-    --muted: #5d6672;
-    --madder: #a3262a;
-    --madder-ink: #ffffff;
-    --indigo: #2c3e7a;
-    --tray: #cfd5d4;
-    --tray-edge: #b7bebe;
-    --cell: #f6f7f4;
-    --line: #d6dad6;
-    --focus: #2c3e7a;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #141922;
-      --ink: #e7e9e4;
-      --muted: #9aa3ae;
-      --madder: #e0605a;
-      --madder-ink: #1a0d0d;
-      --indigo: #9fb2ef;
-      --tray: #262e3a;
-      --tray-edge: #323b49;
-      --cell: #1b212b;
-      --line: #2c3441;
-      --focus: #9fb2ef;
-      color-scheme: dark;
-    }
-  }
-
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Archivo", system-ui, sans-serif;
-    font-variation-settings: "wdth" 100;
-    font-size: 17px;
-    line-height: 1.45;
-  }
-  a { color: var(--indigo); }
-  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
-
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-
-  /* ---------- başlık */
-  .brand {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-    padding: 18px 0 6px;
-    font-size: 15px;
-  }
-  .brand strong { font-weight: 800; font-variation-settings: "wdth" 125; letter-spacing: -0.01em; }
-  .brand strong span { color: var(--madder); }
-  .brand small { color: var(--muted); text-align: right; }
-
-  h1 {
-    margin: 18px 0 4px;
-    font-weight: 800;
-    font-variation-settings: "wdth" 62;
-    font-size: clamp(44px, 11vw, 92px);
-    line-height: 0.92;
-    letter-spacing: -0.01em;
-  }
-  .sub { margin: 0 0 18px; color: var(--muted); font-size: 16px; }
-
-  /* ---------- gün şeridi */
-  .days-bar { position: sticky; top: 0; z-index: 2; background: var(--paper); border-bottom: 1px solid var(--line); }
-  .days {
-    display: flex; gap: 4px; overflow-x: auto; scroll-snap-type: x proximity;
-    padding: 8px 0; scrollbar-width: none;
-  }
-  .days::-webkit-scrollbar { display: none; }
-  .day {
-    flex: 0 0 auto; scroll-snap-align: center;
-    display: grid; justify-items: center; gap: 0;
-    min-width: 54px; padding: 6px 6px 8px;
-    border: 0; border-radius: 10px; background: transparent; color: var(--ink);
-    font: inherit; cursor: pointer;
-  }
-  .day:hover { background: var(--tray); }
-  .day .wd { font-size: 13px; color: var(--muted); }
-  .day .num { font-size: 30px; font-weight: 700; line-height: 1; font-variation-settings: "wdth" 62; }
-  .day.today .wd { color: var(--madder); font-weight: 700; }
-  .day[aria-pressed="true"] { background: var(--madder); color: var(--madder-ink); }
-  .day[aria-pressed="true"] .wd { color: inherit; }
-
-  /* ---------- öğünler */
-  .meal { padding: 26px 0 6px; }
-  .meal-head { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
-  .meal h2 {
-    margin: 0; font-size: 28px; font-weight: 800; line-height: 1.1;
-    font-variation-settings: "wdth" 112;
-  }
-  .now {
-    font-size: 13px; font-weight: 700; color: var(--madder);
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .now::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-
-  .trays { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
-
-  /* Tabldot tepsisi: dış çerçeve çelik, bölmeler içe gömük */
-  .tray {
-    background: var(--tray);
-    border: 1px solid var(--tray-edge);
-    border-radius: 20px;
-    padding: 12px;
-  }
-  .tray-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 2px 6px 10px; }
-  .tray-head h3 { margin: 0; font-size: 17px; font-weight: 700; }
-  .tray-head span { color: var(--muted); font-size: 14px; text-align: right; }
-  .cells { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .cell {
-    background: var(--cell);
-    border-radius: 12px;
-    padding: 12px 12px 13px;
-    min-height: 62px;
-    box-shadow: inset 0 2px 5px rgba(20, 28, 40, 0.16);
-    font-size: 16px; line-height: 1.3;
-    overflow-wrap: anywhere;
-  }
-  .cell.wide { grid-column: 1 / -1; }
-  .alt { display: block; }
-  .alt + .alt::before { content: "veya "; color: var(--muted); font-size: 13px; }
-  .tray-foot { margin: 10px 6px 0; color: var(--muted); font-size: 14px; }
-
-  /* ---------- durum ve boş haller */
-  .empty { padding: 40px 0; max-width: 34em; }
-  .empty p { margin: 0 0 12px; }
-  .btn {
-    font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 10px 16px;
-    background: var(--madder); color: var(--madder-ink); cursor: pointer;
-  }
-
-  main { padding-bottom: 48px; }
-  footer { padding-top: 22px; padding-bottom: 40px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
-  footer h2 { font-size: 15px; color: var(--ink); margin: 0 0 10px; }
-  .sources { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-  .sources li { max-width: 60em; }
-  .sources .bad { color: var(--madder); }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .days { scroll-behavior: smooth; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sivas Yemek — Günlük Yemekhane Menüleri</title>
+  <meta name="description" content="Sivas'taki KYK yurtları, Cumhuriyet Üniversitesi öğrenci yemekhanesi ve CÜTF hastane yemekhanesinin günlük ve haftalık menüleri tek sayfada.">
+  <meta property="og:title" content="Sivas Yemek — Günlük Yemekhane Menüleri">
+  <meta property="og:description" content="KYK Sivas yurtları, CÜ öğrenci ve CÜTF hastane yemekhanelerinin güncel menüleri.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#b9382c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("sy-theme");
+        var theme = saved === "dark" || saved === "light"
+          ? saved
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/app.js"></script>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <strong>Sivas<span>Yemek</span></strong>
-    <small id="updated">Menüler yükleniyor…</small>
+  <a class="skip-link" href="#main-content">İçeriğe atla</a>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="#bugun" class="brand" id="brand-home" aria-label="Sivas Yemek ana sayfa">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" width="32" height="32">
+            <rect width="64" height="64" rx="16" fill="currentColor"/>
+            <path d="M16 33h32c0 9.5-7.2 16-16 16s-16-6.5-16-16Z" fill="#fbf8f3"/>
+            <rect x="23" y="49" width="18" height="3.5" rx="1.75" fill="#fbf8f3" fill-opacity="0.88"/>
+            <path d="M24 26c0-3.2 2.4-3.2 2.4-6.4M32 25c0-3.6 2.4-3.6 2.4-7.2M40 26c0-3.2 2.4-3.2 2.4-6.4" stroke="#fbf8f3" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-title">Sivas <span>Yemek</span></span>
+          <span class="brand-sub" id="header-sync">Yükleniyor…</span>
+        </span>
+      </a>
+
+      <nav class="view-switcher" aria-label="Görünüm seçimi" role="tablist">
+        <button type="button" class="view-tab" role="tab" data-view="daily" aria-selected="true">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16" aria-hidden="true">
+            <rect x="3" y="4" width="14" height="13" rx="2.5" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M3 8.5h14M7 2.5v3M13 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span>Günlük</span>
+        </button>
+        <button type="button" class="view-tab" role="tab" data-view="weekly" aria-selected="false">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16" aria-hidden="true">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M7.5 3.5v13M12.5 3.5v13M2.5 8h15" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Haftalık</span>
+        </button>
+        <button type="button" class="view-tab" role="tab" data-view="search" aria-selected="false">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+            <path d="m13.5 13.5 3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span>Ara</span>
+        </button>
+      </nav>
+
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Tema değiştir" title="Tema değiştir">
+          <svg class="icon-sun" viewBox="0 0 20 20" fill="none" width="18" height="18" aria-hidden="true">
+            <circle cx="10" cy="10" r="3.6" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 20 20" fill="none" width="18" height="18" aria-hidden="true">
+            <path d="M16.2 12.6A6.8 6.8 0 0 1 7.4 3.8a6.8 6.8 0 1 0 8.8 8.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-strip" id="filter-strip" hidden>
+    <div class="container filter-strip-inner">
+      <div class="source-filters" id="source-filters" role="group" aria-label="Yemekhane filtresi"></div>
+    </div>
   </div>
-  <h1 id="title">&nbsp;</h1>
-  <p class="sub" id="subtitle">KYK yurtları, Cumhuriyet Üniversitesi ve CÜTF hastanesi yemekhaneleri</p>
-</div>
 
-<div class="days-bar">
-  <nav class="wrap days" id="days" aria-label="Gün seçimi"></nav>
-</div>
+  <main id="main-content" class="container main-content" tabindex="-1">
+    <div class="skeleton-wrap" id="initial-skeleton" aria-busy="true" aria-label="Menüler yükleniyor">
+      <div class="sk-hero">
+        <div class="sk-line sk-title"></div>
+        <div class="sk-line sk-sub"></div>
+      </div>
+      <div class="sk-days">
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+        <div class="sk-pill"></div>
+      </div>
+      <div class="sk-grid">
+        <div class="sk-card"></div>
+        <div class="sk-card"></div>
+        <div class="sk-card"></div>
+      </div>
+    </div>
+  </main>
 
-<main class="wrap" id="content"></main>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-head">
+        <div>
+          <h2>Veri Kaynakları ve Güncelleme Durumu</h2>
+          <p class="footer-lead">Menüler ilgili kurumların resmi sayfalarından günde bir kez otomatik olarak alınır. Yemekhaneler gün içinde değişiklik yapabilir.</p>
+        </div>
+        <div class="shortcuts-hint" aria-hidden="true">
+          <span><kbd>←</kbd> <kbd>→</kbd> Gün değiştir</span>
+          <span><kbd>/</kbd> Menüde ara</span>
+        </div>
+      </div>
 
-<footer class="wrap">
-  <h2>Kaynaklar</h2>
-  <ul class="sources" id="sources"></ul>
-  <p>Listeler kaynak sitelerden günde bir kez alınır. Yemekhaneler son dakikada değişiklik yapabilir.</p>
-</footer>
+      <ul class="source-status-grid" id="source-status-list"></ul>
 
-<script>
-(() => {
-  const TZ = "Europe/Istanbul";
-  const MEALS = [
-    { id: "kahvalti", name: "Kahvaltı", until: 10 },
-    { id: "ogle", name: "Öğle", until: 15 },
-    { id: "aksam", name: "Akşam", until: 24 },
-  ];
-  const fmt = (opts) => new Intl.DateTimeFormat("tr-TR", { timeZone: TZ, ...opts });
-  const fmtLong = fmt({ day: "numeric", month: "long", weekday: "long" });
-  const fmtWd = fmt({ weekday: "short" });
-  const fmtStamp = fmt({ day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+      <div class="footer-bottom">
+        <span>Sivas Yemek — KYK Sivas, Cumhuriyet Üniversitesi ve CÜTF Hastane yemekhaneleri</span>
+        <span id="footer-generated"></span>
+      </div>
+    </div>
+  </footer>
 
-  const $ = (id) => document.getElementById(id);
-  function el(tag, attrs = {}, ...kids) {
-    const n = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs)) {
-      if (v == null || v === false) continue;
-      if (k === "class") n.className = v; else n.setAttribute(k, v);
-    }
-    for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : String(k));
-    return n;
-  }
-
-  // "2026-11-23" -> Türkiye saatinde öğlen (tarih kaymasını önler)
-  const isoToDate = (iso) => new Date(iso + "T12:00:00+03:00");
-  const todayIso = () => {
-    const p = Object.fromEntries(fmt({ year: "numeric", month: "2-digit", day: "2-digit" })
-      .formatToParts(new Date()).map((x) => [x.type, x.value]));
-    return `${p.year}-${p.month}-${p.day}`;
-  };
-  const hourTr = () => Number(fmt({ hour: "2-digit", hourCycle: "h23" }).format(new Date()));
-
-  let data = null;
-  let selected = null;
-
-  function allDates() {
-    const set = new Set();
-    for (const s of data.sources) for (const e of s.entries) set.add(e.date);
-    return [...set].sort();
-  }
-
-  function renderDays(dates, today) {
-    const nav = $("days");
-    nav.replaceChildren(...dates.map((d) => {
-      const dt = isoToDate(d);
-      const b = el("button", {
-        type: "button",
-        class: "day" + (d === today ? " today" : ""),
-        "aria-pressed": String(d === selected),
-        "aria-label": fmtLong.format(dt) + (d === today ? ", bugün" : ""),
-        "data-date": d,
-      },
-        el("span", { class: "wd" }, d === today ? "Bugün" : fmtWd.format(dt)),
-        el("span", { class: "num" }, String(Number(d.slice(8)))),
-      );
-      b.addEventListener("click", () => select(d));
-      return b;
-    }));
-    const cur = nav.querySelector('[aria-pressed="true"]');
-    if (cur) cur.scrollIntoView({ block: "nearest", inline: "center" });
-  }
-
-  // "Manisa Kebabı / Tavuk Pilav" seçmeli yemektir; "Siyah / Yeşil Zeytin" veya
-  // "Tavuk Pirzola / P. Kızartma" ise tek yemektir. Her parça en az iki kelimeyse
-  // ve kısaltmayla başlamıyorsa alternatif kabul edilir.
-  function alternatives(text) {
-    const parts = text.split(" / ");
-    const isAlt = parts.length > 1 && parts.every((p) => p.split(" ").length >= 2 && !/^\S{1,3}\./.test(p));
-    return isAlt ? parts : [text];
-  }
-
-  function itemCell(text, wide) {
-    const alts = alternatives(text);
-    return el("div", { class: "cell" + (wide ? " wide" : "") },
-      alts.length > 1 ? alts.map((a) => el("span", { class: "alt" }, a)) : text);
-  }
-
-  function tray(source, entry) {
-    const items = entry.items;
-    // Tek sayıda yemek varsa sonuncusu tepsinin tam genişliğini kaplar.
-    const cells = items.map((t, i) => itemCell(t, items.length % 2 === 1 && i === items.length - 1));
-    const foot = [...entry.notes];
-    if (entry.calories) foot.push(entry.calories);
-    return el("article", { class: "tray" },
-      el("header", { class: "tray-head" },
-        el("h3", {}, source.name),
-        el("span", {}, source.meal_labels[entry.meal] || "")),
-      el("div", { class: "cells" }, cells),
-      foot.length ? el("p", { class: "tray-foot" }, foot.join(", ")) : null);
-  }
-
-  function renderContent(today) {
-    const main = $("content");
-    const isToday = selected === today;
-    const h = hourTr();
-    const nextMeal = isToday ? MEALS.find((m) => h < m.until)?.id : null;
-
-    const sections = MEALS.map((meal) => {
-      const trays = data.sources.flatMap((s) =>
-        s.entries.filter((e) => e.date === selected && e.meal === meal.id).map((e) => tray(s, e)));
-      if (!trays.length) return null;
-      return el("section", { class: "meal", "aria-labelledby": "m-" + meal.id },
-        el("div", { class: "meal-head" },
-          el("h2", { id: "m-" + meal.id }, meal.name),
-          meal.id === nextMeal ? el("span", { class: "now" }, "Sıradaki öğün") : null),
-        el("div", { class: "trays" }, trays));
-    }).filter(Boolean);
-
-    if (sections.length) {
-      main.replaceChildren(...sections);
-    } else {
-      main.replaceChildren(el("div", { class: "empty" },
-        el("p", {}, "Bu gün için yayınlanmış bir yemek listesi yok."),
-        selected !== today ? el("button", { class: "btn", type: "button" }, "Bugüne dön") : null));
-      const back = main.querySelector(".btn");
-      if (back) back.addEventListener("click", () => select(today));
-    }
-
-    const dt = isoToDate(selected);
-    $("title").textContent = (isToday ? "Bugün, " : "") + fmtLong.format(dt);
-    document.title = `${fmtLong.format(dt)} · Sivas Yemek`;
-  }
-
-  function renderSources() {
-    $("sources").replaceChildren(...data.sources.map((s) => {
-      let status;
-      if (s.ok) {
-        status = `son güncelleme ${fmtStamp.format(new Date(s.last_success))}`;
-      } else if (s.last_success) {
-        status = `şu an alınamıyor, ${fmtStamp.format(new Date(s.next_run))} için yeniden deneme planlandı. Gösterilen liste ${fmtStamp.format(new Date(s.last_success))} tarihli.`;
-      } else if (s.last_attempt) {
-        status = `henüz alınamadı, ${fmtStamp.format(new Date(s.next_run))} için yeniden deneme planlandı.`;
-      } else {
-        status = "ilk güncelleme bekleniyor.";
-      }
-      return el("li", {},
-        el("a", { href: s.url, rel: "noopener", target: "_blank" }, s.name), ": ",
-        el("span", { class: s.ok === false ? "bad" : null }, status));
-    }));
-    const okTimes = data.sources.map((s) => s.last_success).filter(Boolean).sort();
-    $("updated").textContent = okTimes.length
-      ? "Güncellendi: " + fmtStamp.format(new Date(okTimes[okTimes.length - 1]))
-      : "Henüz veri yok";
-  }
-
-  function select(d, push = true) {
-    selected = d;
-    if (push) history.replaceState(null, "", "#" + d);
-    const today = todayIso();
-    renderDays(allDates(), today);
-    renderContent(today);
-  }
-
-  function pickInitial(dates, today) {
-    const fromHash = location.hash.slice(1);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(fromHash)) return fromHash;
-    if (dates.includes(today) || !dates.length) return today;
-    return dates.find((d) => d >= today) || dates[dates.length - 1];
-  }
-
-  async function load() {
-    try {
-      const res = await fetch("/api/menus.json", { cache: "no-cache" });
-      if (!res.ok) throw new Error(res.status);
-      data = await res.json();
-    } catch (e) {
-      $("updated").textContent = "";
-      $("title").textContent = "Menüler yüklenemedi";
-      const retry = el("button", { class: "btn", type: "button" }, "Tekrar dene");
-      retry.addEventListener("click", () => location.reload());
-      $("content").replaceChildren(el("div", { class: "empty" },
-        el("p", {}, "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin."), retry));
-      return;
-    }
-    renderSources();
-    select(pickInitial(allDates(), todayIso()), false);
-  }
-
-  window.addEventListener("hashchange", () => {
-    const d = location.hash.slice(1);
-    if (data && d && d !== selected) select(d, false);
-  });
-  load();
-})();
-</script>
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
