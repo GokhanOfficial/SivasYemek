@@ -1,0 +1,11 @@
+services:
+  sivas-yemek:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      UPDATE_INTERVAL_HOURS: "24"
+      RETRY_INTERVAL_HOURS: "1"
+    volumes:
+      - ./data:/data
