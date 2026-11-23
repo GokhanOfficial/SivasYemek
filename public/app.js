@@ -880,7 +880,7 @@
     const dateStrip = renderDateStrip(today);
     root.replaceChildren(...[hero, nudge, dateStrip, body].filter(Boolean));
 
-    document.title = `${fmtFullDate.format(dt)} · Sivas Yemek`;
+    document.title = "Sivas Yemek";
 
     // Center active day in horizontal strip
     requestAnimationFrame(() => {
@@ -1037,7 +1037,7 @@
     });
 
     root.replaceChildren(header, el("div", { class: "week-grid" }, dayCards));
-    document.title = `Haftalık Menü (${rangeLabel}) · Sivas Yemek`;
+    document.title = "Haftalık Menü · Sivas Yemek";
   }
 
   /* ------------------------------------------------------------------------
